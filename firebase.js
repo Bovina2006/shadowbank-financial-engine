@@ -1,5 +1,6 @@
 // Firebase v9 Modular SDK
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
+
 import {
   getAuth,
   createUserWithEmailAndPassword,
@@ -7,7 +8,10 @@ import {
   sendEmailVerification,
   sendPasswordResetEmail,
   signOut,
-  deleteUser
+  deleteUser,
+  onAuthStateChanged,
+  GoogleAuthProvider,
+  signInWithPopup
 } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
 
 import {
@@ -29,8 +33,10 @@ const firebaseConfig = {
 };
 
 const app = initializeApp(firebaseConfig);
+
 export const auth = getAuth(app);
 export const db = getFirestore(app);
+export const provider = new GoogleAuthProvider();
 
 export {
   createUserWithEmailAndPassword,
@@ -39,11 +45,11 @@ export {
   sendPasswordResetEmail,
   signOut,
   deleteUser,
+  onAuthStateChanged,
+  signInWithPopup,
   doc,
   setDoc,
   getDoc,
   updateDoc,
   arrayUnion
 };
-
-
