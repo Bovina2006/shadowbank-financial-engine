@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>ShadowBank - Login</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body class="auth-body">
+
+<div class="auth-card">
+  <h2>ShadowBank</h2>
+
+  <input type="email" id="email" placeholder="Email">
+  <input type="password" id="password" placeholder="Password">
+
+  <button onclick="register()">Register</button>
+  <button onclick="login()">Login</button>
+  <button onclick="forgotPassword()">Forgot Password</button>
+
+  <p id="authMessage"></p>
+</div>
+
+<script type="module">
+import {
+  auth,
+  createUserWithEmailAndPassword,
+  signInWithEmailAndPassword,
+  sendEmailVerification,
+  sendPasswordResetEmail
+} from "./firebase.js";
+
+window.register = async () => {
+  const email = email.value;
+  const password = password.value;
+
+  const userCred = await createUserWithEmailAndPassword(auth, email, password);
+  await sendEmailVerification(userCred.user);
+  authMessage.innerText = "Verification email sent. Verify before login.";
+};
+
+window.login = async () => {
+  const userCred = await signInWithEmailAndPassword(auth, email.value, password.value);
+
+  if (!userCred.user.emailVerified) {
+    authMessage.innerText = "Please verify your email first.";
+    return;
+  }
+
+  window.location.href = "dashboard.html";
+};
+
+window.forgotPassword = async () => {
+  await sendPasswordResetEmail(auth, email.value);
+  authMessage.innerText = "Password reset email sent.";
+};
+</script>
+
+</body>
+</html>

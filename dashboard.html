@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>ShadowBank Dashboard</title>
+  <link rel="stylesheet" href="style.css">
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body>
+
+<header>
+  <h1>ShadowBank Dashboard</h1>
+  <button onclick="logout()">Logout</button>
+  <button onclick="deleteAccount()">Delete Account</button>
+</header>
+
+<div class="container">
+
+  <div class="card input-card">
+    <h2>Financial Inputs</h2>
+
+    <input type="number" id="income" placeholder="Monthly Income">
+    <input type="number" id="savings" placeholder="Monthly Savings">
+    <input type="number" id="credit" placeholder="Credit Score">
+    <input type="number" id="transactions" placeholder="Transactions per Month">
+    <input type="number" id="subs" placeholder="Subscription Cost / Month">
+    <input type="number" id="emi" placeholder="Monthly EMI">
+    <input type="number" id="loan" placeholder="Monthly Loan Payment">
+    <input type="number" id="years" placeholder="Years to Simulate">
+
+    <button onclick="runSimulation()">Analyze & Save</button>
+  </div>
+
+  <div class="results-panel">
+    <div class="card">
+      <h2>Financial Health Score</h2>
+      <h1 id="healthScore"></h1>
+      <p id="riskLevel"></p>
+    </div>
+
+    <div class="chart-container">
+      <h2>Total Wealth Erosion</h2>
+      <h1 id="totalLeakage"></h1>
+      <canvas id="pieChart"></canvas>
+    </div>
+
+    <div class="card">
+      <h2>Monthly History</h2>
+      <ul id="history"></ul>
+    </div>
+  </div>
+
+</div>
+
+<script type="module" src="script.js"></script>
+</body>
+</html>
