@@ -1,22 +1,36 @@
 import {
   auth,
+  provider,
   createUserWithEmailAndPassword,
   signInWithEmailAndPassword,
-  sendPasswordResetEmail
+  sendEmailVerification,
+  sendPasswordResetEmail,
+  signInWithPopup
 } from "./firebase.js";
 
+const emailInput = document.getElementById("email");
+const passwordInput = document.getElementById("password");
 const errorMessage = document.getElementById("error-message");
 
-/* LOGIN */
-document.getElementById("loginBtn").addEventListener("click", async () => {
-  const email = document.getElementById("email").value;
-  const password = document.getElementById("password").value;
+/* ================= LOGIN ================= */
 
+document.getElementById("loginBtn").addEventListener("click", async () => {
   errorMessage.textContent = "";
 
   try {
-    await signInWithEmailAndPassword(auth, email, password);
+    const userCred = await signInWithEmailAndPassword(
+      auth,
+      emailInput.value,
+      passwordInput.value
+    );
+
+    if (!userCred.user.emailVerified) {
+      errorMessage.textContent = "Please verify your email before logging in.";
+      return;
+    }
+
     window.location.href = "dashboard.html";
+
   } catch (error) {
     if (error.code === "auth/wrong-password") {
       errorMessage.textContent = "Wrong password, please try again.";
@@ -28,31 +42,52 @@ document.getElementById("loginBtn").addEventListener("click", async () => {
   }
 });
 
-/* REGISTER */
+/* ================= REGISTER ================= */
+
 document.getElementById("registerBtn").addEventListener("click", async () => {
-  const email = document.getElementById("email").value;
-  const password = document.getElementById("password").value;
+  errorMessage.textContent = "";
 
   try {
-    await createUserWithEmailAndPassword(auth, email, password);
-    alert("Account created successfully!");
+    const userCred = await createUserWithEmailAndPassword(
+      auth,
+      emailInput.value,
+      passwordInput.value
+    );
+
+    await sendEmailVerification(userCred.user);
+
+    errorMessage.textContent =
+      "Account created. Verification email sent. Please verify before login.";
+
   } catch (error) {
     errorMessage.textContent = error.message;
   }
 });
 
-/* FORGOT PASSWORD */
-document.getElementById("forgotBtn").addEventListener("click", async () => {
-  const email = document.getElementById("email").value;
+/* ================= GOOGLE LOGIN ================= */
 
-  if (!email) {
+window.googleLogin = async () => {
+  try {
+    await signInWithPopup(auth, provider);
+    window.location.href = "dashboard.html";
+  } catch (error) {
+    errorMessage.textContent = error.message;
+  }
+};
+
+/* ================= FORGOT PASSWORD ================= */
+
+document.getElementById("forgotBtn").addEventListener("click", async () => {
+  errorMessage.textContent = "";
+
+  if (!emailInput.value) {
     errorMessage.textContent = "Please enter your email first.";
     return;
   }
 
   try {
-    await sendPasswordResetEmail(auth, email);
-    alert("Password reset email sent.");
+    await sendPasswordResetEmail(auth, emailInput.value);
+    errorMessage.textContent = "Password reset email sent.";
   } catch (error) {
     errorMessage.textContent = error.message;
   }

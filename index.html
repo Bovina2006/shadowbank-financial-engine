@@ -29,67 +29,6 @@
 
 </div>
 
-<script type="module">
-import {
-  auth,
-  provider,
-  createUserWithEmailAndPassword,
-  signInWithEmailAndPassword,
-  sendEmailVerification,
-  sendPasswordResetEmail,
-  signInWithPopup
-} from "./firebase.js";
-
-window.register = async () => {
-  try {
-    const userCred = await createUserWithEmailAndPassword(auth, email.value, password.value);
-    await sendEmailVerification(userCred.user);
-    authMessage.innerText = "Verification email sent. Verify before login.";
-  } catch (error) {
-    authMessage.innerText = error.message;
-  }
-};
-
-window.login = async () => {
-  try {
-    const userCred = await signInWithEmailAndPassword(auth, email.value, password.value);
-
-    if (!userCred.user.emailVerified) {
-      authMessage.innerText = "Please verify your email first.";
-      return;
-    }
-
-    window.location.href = "dashboard.html";
-
-  } catch (error) {
-    if (error.code === "auth/wrong-password") {
-      authMessage.innerText = "Wrong password, please try again.";
-    } else if (error.code === "auth/user-not-found") {
-      authMessage.innerText = "No account found with this email.";
-    } else {
-      authMessage.innerText = error.message;
-    }
-  }
-};
-
-window.googleLogin = async () => {
-  try {
-    await signInWithPopup(auth, provider);
-    window.location.href = "dashboard.html";
-  } catch (error) {
-    authMessage.innerText = error.message;
-  }
-};
-
-window.forgotPassword = async () => {
-  try {
-    await sendPasswordResetEmail(auth, email.value);
-    authMessage.innerText = "Password reset email sent.";
-  } catch (error) {
-    authMessage.innerText = error.message;
-  }
-};
-</script>
 
 <script type="module" src="index.js"></script>
 

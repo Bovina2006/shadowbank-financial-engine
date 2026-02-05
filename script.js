@@ -50,6 +50,40 @@ window.deleteAccount = async () => {
   window.location.href = "index.html";
 };
 
+window.toggleLoanSection = function () {
+  const hasLoans = document.getElementById("hasLoans").value;
+  document.getElementById("loanSection").classList.toggle("hidden", hasLoans === "no");
+};
+
+window.toggleSubSection = function () {
+  const hasSubs = document.getElementById("hasSubs").value;
+  document.getElementById("subSection").classList.toggle("hidden", hasSubs === "no");
+};
+document.getElementById("loanCount").addEventListener("change", function () {
+  const container = document.getElementById("loanInputs");
+  container.innerHTML = "";
+
+  for (let i = 1; i <= this.value; i++) {
+    container.innerHTML += `
+      <label>Loan ${i} Monthly Payment</label>
+      <input type="number" class="loanAmount" placeholder="Enter amount">
+    `;
+  }
+});
+
+document.getElementById("subCount").addEventListener("change", function () {
+  const container = document.getElementById("subInputs");
+  container.innerHTML = "";
+
+  for (let i = 1; i <= this.value; i++) {
+    container.innerHTML += `
+      <label>Subscription ${i} Monthly Cost</label>
+      <input type="number" class="subAmount" placeholder="Enter amount">
+    `;
+  }
+});
+
+
 /* =========================
    MAIN ANALYSIS ENGINE
 ========================= */
@@ -61,9 +95,21 @@ window.runSimulation = async () => {
     const savings = +document.getElementById("savings").value || 0;
     const credit = +document.getElementById("credit").value || 0;
     const transactions = +document.getElementById("transactions").value || 0;
-    const subs = +document.getElementById("subs").value || 0;
-    const emi = +document.getElementById("emi").value || 0;
-    const loan = +document.getElementById("loan").value || 0;
+    let totalLoan = 0;
+    if (document.getElementById("hasLoans").value === "yes") {
+      document.querySelectorAll(".loanAmount").forEach(input => {
+        totalLoan += (+input.value || 0);
+      });
+    }
+
+    let totalSubs = 0;
+    if (document.getElementById("hasSubs").value === "yes") {
+      document.querySelectorAll(".subAmount").forEach(input => {
+        totalSubs += (+input.value || 0);
+      });
+    }
+
+
     const years = +document.getElementById("years").value || 1;
 
     if (income <= 0) {
@@ -76,11 +122,11 @@ window.runSimulation = async () => {
     const inflation = savings * 0.06 * years;
     const opportunity = savings * 0.08 * years;
     const micro = transactions * 2 * 12 * years;
-    const subscription = subs * 12 * years;
-    const emiLoss = emi * 12 * years;
-    const loanLoss = loan * 12 * years;
+    const subscription = totalSubs * 12 * years;
+    const loanLoss = totalLoan * 12 * years;
 
-    const total = inflation + opportunity + micro + subscription + emiLoss + loanLoss;
+
+    const total = inflation + opportunity + micro + subscription + loanLoss;
 
     document.getElementById("totalLeakage").innerText = "₹" + total.toFixed(0);
 
@@ -88,8 +134,8 @@ window.runSimulation = async () => {
 
     let score = 100;
 
-    const dti = ((emi + loan) / income) * 100;
-    const subscriptionRatio = (subs / income) * 100;
+    const dti = (totalLoan / income) * 100;
+    const subscriptionRatio = (totalSubs / income) * 100;
 
     if (dti > 50) score -= 30;
     else if (dti > 35) score -= 15;
@@ -117,7 +163,7 @@ window.runSimulation = async () => {
 
     /* ===== Generate Chart ===== */
 
-    generateChart(inflation, opportunity, subscription, micro, emiLoss, loanLoss);
+    generateChart(inflation, opportunity, subscription, micro, loanLoss);
 
   } catch (error) {
     console.error("Simulation error:", error);
@@ -174,7 +220,7 @@ async function loadHistory() {
    PIE CHART
 ========================= */
 
-function generateChart(inflation, opportunity, subs, micro, emi, loan) {
+function generateChart(inflation, opportunity, subs, micro, loan) {
 
   const ctx = document.getElementById("pieChart");
   if (!ctx) return;
@@ -184,9 +230,9 @@ function generateChart(inflation, opportunity, subs, micro, emi, loan) {
   chart = new Chart(ctx, {
     type: "pie",
     data: {
-      labels: ["Inflation","Opportunity","Subscriptions","Micro","EMI","Loans"],
+      labels: ["Inflation","Opportunity","Subscriptions","Micro","Loans"],
       datasets: [{
-        data: [inflation, opportunity, subs, micro, emi, loan]
+        data: [inflation, opportunity, subs, micro, loan]
       }]
     },
     options: {
