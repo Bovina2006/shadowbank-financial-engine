@@ -6,11 +6,21 @@
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 </head>
 <body>
+<div class="menu-container">
+  <button id="menuBtn" class="menu-btn">
+    <span></span>
+    <span></span>
+    <span></span>
+  </button>
+
+  <div id="menuDropdown" class="menu-dropdown">
+    <button id="logoutBtn">Logout</button>
+    <button id="deleteBtn" class="danger">Delete Account</button>
+  </div>
+</div>
 
 <header>
   <h1>ShadowBank Dashboard</h1>
-  <button onclick="logout()">Logout</button>
-  <button onclick="deleteAccount()">Delete Account</button>
 </header>
 
 <div class="container">
@@ -27,10 +37,12 @@
 
     <label>Transactions per Month</label>
     <select id="transactions">
-      <option value="20">0 - 20</option>
-      <option value="75">21 - 75</option>
-      <option value="150">76 - 150</option>
-      <option value="250">150+</option>
+      <option value="15">0 - 15</option>
+      <option value="30">15 - 30</option>
+      <option value="45">30 - 45</option>
+      <option value="60">45 - 60</option>
+      <option value="75">60 - 75</option>
+      <option value="150">90+</option>
     </select>
 
     <label>Do you have loans?</label>
@@ -63,7 +75,7 @@
         <option value="1">1</option>
         <option value="2">2</option>
         <option value="3">3</option>
-        <option value="5">5+</option>
+        <option value="4">4+</option>
       </select>
 
       <div id="subInputs"></div>

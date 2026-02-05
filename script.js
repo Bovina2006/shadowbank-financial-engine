@@ -246,3 +246,40 @@ function generateChart(inflation, opportunity, subs, micro, loan) {
     }
   });
 }
+
+document.addEventListener("DOMContentLoaded", () => {
+  const menuBtn = document.getElementById("menuBtn");
+  const menuDropdown = document.getElementById("menuDropdown");
+  const logoutBtn = document.getElementById("logoutBtn");
+  const deleteBtn = document.getElementById("deleteBtn");
+
+  if (!menuBtn || !menuDropdown) return;
+
+  // Toggle dropdown
+  menuBtn.addEventListener("click", (e) => {
+    e.stopPropagation();
+    menuDropdown.classList.toggle("show");
+  });
+
+  // Close if clicking outside
+  document.addEventListener("click", () => {
+    menuDropdown.classList.remove("show");
+  });
+
+  // Logout click
+  logoutBtn.addEventListener("click", async () => {
+    await signOut(auth);
+    window.location.href = "index.html";
+  });
+
+  // Delete click
+  deleteBtn.addEventListener("click", async () => {
+    const confirmDelete = confirm("Are you sure you want to delete your account?");
+    if (!confirmDelete) return;
+
+    await deleteUser(auth.currentUser);
+    alert("Account deleted successfully.");
+    window.location.href = "index.html";
+  });
+});
+
