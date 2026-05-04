@@ -164,6 +164,7 @@ window.runSimulation = async () => {
     /* ===== Generate Chart ===== */
 
     generateChart(inflation, opportunity, subscription, micro, loanLoss);
+    generateInsights(income, savings, totalLoan, totalSubs, transactions, score);
 
   } catch (error) {
     console.error("Simulation error:", error);
@@ -247,6 +248,63 @@ function generateChart(inflation, opportunity, subs, micro, loan) {
   });
 }
 
+function generateInsights(income, savings, totalLoan, totalSubs, transactions, score) {
+
+  const list = document.getElementById("insightsList");
+  if (!list) return;
+
+  list.innerHTML = "";
+
+  const insights = [];
+
+  const savingsRate = (savings / income) * 100;
+  const loanRatio = (totalLoan / income) * 100;
+  const subRatio = (totalSubs / income) * 100;
+
+  // 🧠 SAVINGS
+  if (savingsRate < 20) {
+    insights.push("⚠️ Your savings rate is low. Try to save at least 20% of your income.");
+  } else {
+    insights.push("✅ Good savings habit. You're building financial stability.");
+  }
+
+  // 💳 LOANS
+  if (loanRatio > 40) {
+    insights.push("🚨 High loan burden. Consider reducing EMIs or avoiding new loans.");
+  } else if (loanRatio > 20) {
+    insights.push("⚠️ Moderate loan load. Keep it under control.");
+  }
+
+  // 📺 SUBSCRIPTIONS
+  if (subRatio > 10) {
+    insights.push("📉 You're spending a lot on subscriptions. Cut unused ones.");
+  }
+
+  // 🛒 MICRO SPENDING
+  if (transactions > 100) {
+    insights.push("💸 Frequent small transactions are draining money. Track daily spending.");
+  }
+
+  // 📊 SCORE BASED
+  if (score < 50) {
+    insights.push("🔥 Financial health is weak. Focus on cutting expenses and boosting savings.");
+  } else if (score < 75) {
+    insights.push("⚠️ You're doing okay, but there's room for improvement.");
+  } else {
+    insights.push("💎 Strong financial position. Keep it consistent.");
+  }
+
+  // 💡 GENERAL TIP
+  insights.push("💡 Wealth erosion comes from inflation, missed investments, and hidden spending.");
+
+  // Render
+  insights.forEach(text => {
+    const li = document.createElement("li");
+    li.innerText = text;
+    list.appendChild(li);
+  });
+}
+
 document.addEventListener("DOMContentLoaded", () => {
   const menuBtn = document.getElementById("menuBtn");
   const menuDropdown = document.getElementById("menuDropdown");
@@ -283,3 +341,29 @@ document.addEventListener("DOMContentLoaded", () => {
   });
 });
 
+const clearHistoryBtn = document.getElementById("clearHistoryBtn");
+
+if (clearHistoryBtn) {
+  clearHistoryBtn.addEventListener("click", async () => {
+    const confirmClear = confirm("Clear all monthly history?");
+    if (!confirmClear) return;
+
+    try {
+      const user = auth.currentUser;
+      if (!user) return;
+
+      const userRef = doc(db, "users", user.uid);
+
+      await setDoc(userRef, {
+        history: []
+      }, { merge: true });
+
+      alert("History cleared.");
+
+      loadHistory(); // refresh UI
+    } catch (err) {
+      console.error("Clear history error:", err);
+      alert("Failed to clear history.");
+    }
+  });
+}
